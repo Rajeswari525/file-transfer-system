@@ -1,0 +1,68 @@
+package com.fts.fileCheck;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Map;
+
+public class FileCheckHandler implements RequestHandler<Map<String,String>, Map<String,String>> {
+
+    @Override
+    public Map<String,String> handleRequest(Map<String, String> event, Context context) {
+        LambdaLogger logger = context.getLogger();
+        logger.log("Input event is : " + event);
+//        {
+//            "status" : "success",
+//            "id" : 432,
+//            "fileName" : "sample.txt",
+//            "filePath" : "bucketName/IN/sample.txt"
+//        }
+
+        //get the filecontent from s3 bucket
+        //check if the file content is empty or not
+        //if all looks good,
+            // update the record in file table with the lastExecuted step
+            // insert a record into file_history table
+            // send a event to kafka topic for next lambda execution
+        //if not,
+            // update the record in file table with the error message
+            // insert a record into file_history table with the error message
+            // send a event to kafka topic to execute cleanup lambda
+
+        String dbName = System.getenv("DB_NAME");
+        String dbUserName = System.getenv("DB_USERNAME");
+        String dbPassword = System.getenv("DB_PASSWORD");
+        logger.log("DB_NAME is : " + dbName);
+        logger.log("DB_USERNAME is : " + dbUserName);
+        logger.log("DB_PASSWORD is : " + dbPassword);
+
+        Connection con = null;
+
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:5432/" + dbName ,dbUserName, dbPassword);
+
+            String updateFileTable = "update file set last_executed_step = 'FileCheckLambda' where id = " + event.get("id");
+            logger.log("Query to update file table is : " + updateFileTable);
+
+            String insertFileHistory = "insert into file_history (file_name, file_path, step_name, status, failure_reason) values ('" + event.get("fileName") + "', '" + event.get("filePath") + "', 'FileCheckLambda', 'success', '')";
+            logger.log("Query to insert into file_history table is : " + insertFileHistory);
+
+            con.prepareStatement(updateFileTable).execute();
+            con.prepareStatement(insertFileHistory).execute();
+
+            event.put("status", "success");
+
+            con.close();
+        }
+        catch(Exception e) {
+            event.put("status", "failed");
+            event.put("errorMessage", e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return event;
+    }
+}

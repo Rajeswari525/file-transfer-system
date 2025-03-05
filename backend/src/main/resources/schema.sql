@@ -1,0 +1,38 @@
+---- Create the sequence for file table
+--CREATE SEQUENCE file_seq START 1;
+--
+---- Create the file table with sequence-based ID generation
+--CREATE TABLE file (
+--    id BIGINT PRIMARY KEY DEFAULT nextval('file_seq'),
+--    file_name VARCHAR(100) NOT NULL,
+--    file_path VARCHAR(250) NOT NULL,
+--    file_size VARCHAR(50) NOT NULL,
+--    processed_start_date_time TIMESTAMP NOT NULL,
+--    processed_end_date_time TIMESTAMP NOT NULL,
+--    status VARCHAR(50),
+--    last_executed_step VARCHAR(50),
+--    uploaded_by BIGINT
+--);
+--
+---- Create indexes for file table
+--CREATE INDEX idx_file_status ON file(status);
+--CREATE INDEX idx_file_processed_start_date_time ON file(processed_start_date_time);
+--
+--
+---- Create the sequence for file_history table
+--CREATE SEQUENCE file_history_seq START 1;
+--
+---- Create the file_history table with sequence-based ID generation
+--CREATE TABLE file_history (
+--    id BIGINT PRIMARY KEY DEFAULT nextval('file_history_seq'),
+--    file_name VARCHAR(100) NOT NULL,
+--    file_path VARCHAR(250) NOT NULL,
+--    processed_date_time TIMESTAMP NOT NULL DEFAULT now(),
+--    status VARCHAR(50),
+--    step_name VARCHAR(50),
+--    failure_reason VARCHAR(250)
+--);
+--
+---- Create indexes for file_history table
+--CREATE INDEX idx_file_history_status ON file_history(status);
+--CREATE INDEX idx_file_history_processed_date_time ON file_history(processed_date_time);

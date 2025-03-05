@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: "storedProcedureInvoke"
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: lambda-group
+      auto-offset-reset: earliest

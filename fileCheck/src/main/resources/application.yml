@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: "fileCheck"
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: lambda-group
+      auto-offset-reset: earliest
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ftsDB
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
